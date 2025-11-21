@@ -23,7 +23,7 @@ Scalpel is a terminal-native, agentic CLI that brings surgical precision to Linu
 ## ✨ Features
 
 - 🤖 **AI-Powered Analysis**: Natural language kernel instrumentation with Claude or Gemini
-- 🔀 **Multi-Provider Support**: Choose between Claude 3.5 Sonnet or Gemini 2.0 Flash
+- 🔀 **Multi-Provider Support**: Choose between Claude Sonnet 4.5 or Gemini 2.5 Flash
 - 🔍 **Dynamic Instrumentation**: Insert probes without recompiling the kernel
 - 📊 **Real-time TUI**: Beautiful terminal interface inspired by Claude Code
 - 🛡️ **Safety Guards**: Multiple layers of protection for kernel modifications
@@ -94,7 +94,7 @@ provider = "claude"
 api_key = "sk-ant-..."
 
 # Claude model to use
-model = "claude-3-5-sonnet-20241022"
+model = "claude-sonnet-4-5-20250929"
 
 # API endpoint
 endpoint = "https://api.anthropic.com/v1"
@@ -129,7 +129,7 @@ provider = "gemini"
 api_key = "AIza..."
 
 # Gemini model to use
-model = "gemini-2.0-flash-exp"
+model = "gemini-2.5-flash-latest"
 
 # API endpoint
 endpoint = "https://generativelanguage.googleapis.com/v1beta"
@@ -302,7 +302,7 @@ Scalpel includes multiple safety layers:
 - **Runtime**: Rust 🦀
 - **eBPF Framework**: libbpf (with CO-RE)
 - **TUI**: ratatui (Claude Code aesthetic)
-- **LLM**: Claude 3.5 Sonnet (Anthropic) or Gemini 2.0 Flash (Google)
+- **LLM**: Claude Sonnet 4.5 (Anthropic) or Gemini 2.5 Flash (Google)
 - **Symbol Resolution**: `/proc/kallsyms`
 - **Debug Info**: DWARF parsing (planned: gimli)
 - **Disassembly**: Planned integration with capstone
@@ -393,7 +393,7 @@ MIT License - See LICENSE file for details
 - Inspired by [bpftrace](https://github.com/iovisor/bpftrace) and [bcc](https://github.com/iovisor/bcc)
 - Built with the amazing [aya-rs](https://github.com/aya-rs/aya) ecosystem
 - UI inspired by Claude Code's terminal aesthetic
-- Powered by Claude 3.5 Sonnet (Anthropic) and Gemini 2.0 Flash (Google)
+- Powered by Claude Sonnet 4.5 (Anthropic) and Gemini 2.5 Flash (Google)
 
 ## 📞 Support
 

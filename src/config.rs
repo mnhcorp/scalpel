@@ -53,7 +53,7 @@ pub struct Config {
 }
 
 fn default_model() -> String {
-    "claude-3-5-sonnet-20241022".to_string()
+    "claude-sonnet-4-5-20250929".to_string()
 }
 
 fn default_endpoint() -> String {
@@ -87,8 +87,8 @@ impl Default for Config {
             provider: provider.clone(),
             api_key,
             model: match provider {
-                LlmProvider::Claude => "claude-3-5-sonnet-20241022".to_string(),
-                LlmProvider::Gemini => "gemini-2.0-flash-exp".to_string(),
+                LlmProvider::Claude => "claude-sonnet-4-5-20250929".to_string(),
+                LlmProvider::Gemini => "gemini-2.5-flash-latest".to_string(),
             },
             endpoint: match provider {
                 LlmProvider::Claude => "https://api.anthropic.com/v1".to_string(),
