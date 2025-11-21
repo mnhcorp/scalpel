@@ -1,0 +1,28 @@
+# Rust
+/target/
+**/*.rs.bk
+*.pdb
+Cargo.lock
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+
+# Config files with secrets
+config.toml
+
+# Build artifacts
+*.o
+*.so
+*.a
+*.bpf.c
+*.bpf.o
+
+# Testing
+*.log
