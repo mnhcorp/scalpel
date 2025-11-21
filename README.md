@@ -22,7 +22,8 @@ Scalpel is a terminal-native, agentic CLI that brings surgical precision to Linu
 
 ## ✨ Features
 
-- 🤖 **AI-Powered Analysis**: Natural language kernel instrumentation using Claude 3.5 Sonnet
+- 🤖 **AI-Powered Analysis**: Natural language kernel instrumentation with Claude or Gemini
+- 🔀 **Multi-Provider Support**: Choose between Claude 3.5 Sonnet or Gemini 2.0 Flash
 - 🔍 **Dynamic Instrumentation**: Insert probes without recompiling the kernel
 - 📊 **Real-time TUI**: Beautiful terminal interface inspired by Claude Code
 - 🛡️ **Safety Guards**: Multiple layers of protection for kernel modifications
@@ -60,7 +61,7 @@ Scalpel operates through a 4-phase state machine:
 - Linux kernel 5.8+ with eBPF support (`CONFIG_BPF=y`)
 - Rust 1.70+ (for building from source)
 - Root or `CAP_BPF` capability
-- Anthropic API key for Claude
+- API key for Claude (Anthropic) or Gemini (Google)
 
 ### Install from Source
 
@@ -81,9 +82,14 @@ cargo install --path .
 
 ### Configuration
 
-Create a configuration file at `~/.config/scalpel/config.toml`:
+Scalpel supports both **Claude** and **Gemini** as LLM providers. Create a configuration file at `~/.config/scalpel/config.toml`:
+
+#### Option 1: Claude (Anthropic)
 
 ```toml
+# LLM provider (claude or gemini)
+provider = "claude"
+
 # Anthropic API key (or set ANTHROPIC_API_KEY env var)
 api_key = "sk-ant-..."
 
@@ -112,6 +118,45 @@ Or set your API key as an environment variable:
 ```bash
 export ANTHROPIC_API_KEY="sk-ant-..."
 ```
+
+#### Option 2: Gemini (Google)
+
+```toml
+# LLM provider
+provider = "gemini"
+
+# Google API key (or set GEMINI_API_KEY env var)
+api_key = "AIza..."
+
+# Gemini model to use
+model = "gemini-2.0-flash-exp"
+
+# API endpoint
+endpoint = "https://generativelanguage.googleapis.com/v1beta"
+
+# Path to vmlinux debug symbols (optional, auto-detected)
+# vmlinux_path = "/usr/lib/debug/boot/vmlinux-$(uname -r)"
+
+# Enable safety guards
+safety_guards = true
+require_confirmation = true
+
+# Maximum active probes
+max_probes = 16
+
+# Logging level
+log_level = "info"
+```
+
+Or set your API key as an environment variable:
+
+```bash
+export GEMINI_API_KEY="AIza..."
+```
+
+**Getting API Keys:**
+- **Claude**: Get your API key from [Anthropic Console](https://console.anthropic.com/)
+- **Gemini**: Get your API key from [Google AI Studio](https://aistudio.google.com/app/apikey)
 
 ### Installing Kernel Debug Symbols
 
@@ -257,7 +302,7 @@ Scalpel includes multiple safety layers:
 - **Runtime**: Rust 🦀
 - **eBPF Framework**: libbpf (with CO-RE)
 - **TUI**: ratatui (Claude Code aesthetic)
-- **LLM**: Anthropic Claude 3.5 Sonnet
+- **LLM**: Claude 3.5 Sonnet (Anthropic) or Gemini 2.0 Flash (Google)
 - **Symbol Resolution**: `/proc/kallsyms`
 - **Debug Info**: DWARF parsing (planned: gimli)
 - **Disassembly**: Planned integration with capstone
@@ -348,7 +393,7 @@ MIT License - See LICENSE file for details
 - Inspired by [bpftrace](https://github.com/iovisor/bpftrace) and [bcc](https://github.com/iovisor/bcc)
 - Built with the amazing [aya-rs](https://github.com/aya-rs/aya) ecosystem
 - UI inspired by Claude Code's terminal aesthetic
-- Powered by Anthropic's Claude 3.5 Sonnet
+- Powered by Claude 3.5 Sonnet (Anthropic) and Gemini 2.0 Flash (Google)
 
 ## 📞 Support
 

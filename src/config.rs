@@ -4,16 +4,31 @@ use std::fmt;
 use std::fs;
 use std::path::PathBuf;
 
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "lowercase")]
+pub enum LlmProvider {
+    Claude,
+    Gemini,
+}
+
+fn default_provider() -> LlmProvider {
+    LlmProvider::Claude
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Config {
-    /// Anthropic API key for Claude
+    /// LLM provider to use (claude or gemini)
+    #[serde(default = "default_provider")]
+    pub provider: LlmProvider,
+
+    /// API key for the selected provider
     pub api_key: Option<String>,
 
-    /// Claude model to use
+    /// Model to use
     #[serde(default = "default_model")]
     pub model: String,
 
-    /// API endpoint (AWS Bedrock or direct)
+    /// API endpoint (provider-specific)
     #[serde(default = "default_endpoint")]
     pub endpoint: String,
 
@@ -59,10 +74,26 @@ fn default_log_level() -> String {
 
 impl Default for Config {
     fn default() -> Self {
+        // Try to detect provider from environment
+        let (provider, api_key) = if let Ok(key) = std::env::var("GEMINI_API_KEY") {
+            (LlmProvider::Gemini, Some(key))
+        } else if let Ok(key) = std::env::var("ANTHROPIC_API_KEY") {
+            (LlmProvider::Claude, Some(key))
+        } else {
+            (LlmProvider::Claude, None)
+        };
+
         Self {
-            api_key: std::env::var("ANTHROPIC_API_KEY").ok(),
-            model: default_model(),
-            endpoint: default_endpoint(),
+            provider: provider.clone(),
+            api_key,
+            model: match provider {
+                LlmProvider::Claude => "claude-3-5-sonnet-20241022".to_string(),
+                LlmProvider::Gemini => "gemini-2.0-flash-exp".to_string(),
+            },
+            endpoint: match provider {
+                LlmProvider::Claude => "https://api.anthropic.com/v1".to_string(),
+                LlmProvider::Gemini => "https://generativelanguage.googleapis.com/v1beta".to_string(),
+            },
             vmlinux_path: None,
             safety_guards: true,
             require_confirmation: true,
@@ -82,9 +113,18 @@ impl Config {
             let mut config: Config = toml::from_str(&contents)
                 .context("Failed to parse config file")?;
 
-            // Override with environment variable if present
-            if let Ok(api_key) = std::env::var("ANTHROPIC_API_KEY") {
-                config.api_key = Some(api_key);
+            // Override with environment variable if present based on provider
+            match config.provider {
+                LlmProvider::Claude => {
+                    if let Ok(api_key) = std::env::var("ANTHROPIC_API_KEY") {
+                        config.api_key = Some(api_key);
+                    }
+                }
+                LlmProvider::Gemini => {
+                    if let Ok(api_key) = std::env::var("GEMINI_API_KEY") {
+                        config.api_key = Some(api_key);
+                    }
+                }
             }
 
             Ok(config)
@@ -119,8 +159,13 @@ impl Config {
 
     pub fn validate(&self) -> Result<()> {
         if self.api_key.is_none() {
+            let env_var = match self.provider {
+                LlmProvider::Claude => "ANTHROPIC_API_KEY",
+                LlmProvider::Gemini => "GEMINI_API_KEY",
+            };
             anyhow::bail!(
-                "API key not configured. Set ANTHROPIC_API_KEY environment variable or configure in ~/.config/scalpel/config.toml"
+                "API key not configured. Set {} environment variable or configure in ~/.config/scalpel/config.toml",
+                env_var
             );
         }
         Ok(())
@@ -130,6 +175,7 @@ impl Config {
 impl fmt::Display for Config {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         writeln!(f, "Scalpel Configuration:")?;
+        writeln!(f, "  Provider: {:?}", self.provider)?;
         writeln!(f, "  Model: {}", self.model)?;
         writeln!(f, "  Endpoint: {}", self.endpoint)?;
         writeln!(f, "  API Key: {}", if self.api_key.is_some() { "configured" } else { "not set" })?;
